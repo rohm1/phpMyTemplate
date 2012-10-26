@@ -18,7 +18,7 @@ say_hello.tpl
 <!Doctype html>
 <head></head>
 <body>
-	{$hello_world}
+	{$say_hello}
 </body>
 </html>
 ```
