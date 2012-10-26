@@ -46,7 +46,7 @@ phpMyTemplate comes with a lot of features:
  * {foreach $array as $k => $v} {$k} => {$v} {foreachelse} The array is empty! {/foreach}
  * {while expr} ... {/while}
  * {for var=i from=1 to=10} {$i} {/for}
- {for var=i from=1 downto=10} {$i} {/for}
+ {for var=i from=10 downto=1} {$i} {/for}
  You can use the step parameter; it is automatically set to 1 for to and -1 to downto.
  * Display your variables: {$myVar} or {$myArray.var} for an array
  * Variable modifiers: $var|modifier
