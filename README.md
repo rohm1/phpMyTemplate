@@ -3,7 +3,7 @@ phpMyTemplate
 
 phpMyTemplate is a PHP template engine. It will allow you to separate the PHP code and the HTML so that you can more easily share the work in a team while keeping your code flexible and progressive. phpMyTemplate is capable of template inheritance, doing maths, it has the major structure controls, you can write your own functions, and it processes the content of the variables to check for template tags inside of them. Templates are compiled to PHP and cached.
 
-##Simple setup##
+##Basic setup##
 
 say_hello.php
 ```php
