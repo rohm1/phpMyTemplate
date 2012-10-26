@@ -27,24 +27,24 @@ Note that with this basic setup, the say_hello.tpl file has to be placed in a su
 
 ##Features##
 phpMyTemplate comes with a lot of features:
-* In the PHP
+* PHP (for the developper)
  * addDir: adds a new directory where to search for the template file
  * assign: assigns variables that can be retrieved in the HTML
-  * assign(name, value)
-  * assign( array(name1 => value1, name2 => value2, ...) )
+  assign(name, value)
+  assign( array(name1 => value1, name2 => value2, ...) )
  * display: allows to choose the template file to use
  * Users function:
  ``` function tplfunction_myFunction ($params, $_tpl) { } ```
  $params: array of the arguments (see the HTML section); $_tpl: the current tpl object in case you need it
-* In the HTML
+* HTML (for the designer)
  * {extends file=fname.tpl}: allows to make template inheritance
  * {block name=b1} ... {/block}: use blocks in your template inheritance to change the content of the master template's block. You can use the append=none|replace|append|prepend parameter. Default value is replace.
  * {assign var=varName value="hello world!"}
  * {if expr} ... {elseif expr} ... {else} ... {/if}
  * {foreach $array as $k => $v} {$k} => {$v} {foreachelse} The array is empty! {/foreach}
  * {while expr} ... {/while}
- * {for var=i from=1 to=10} {$i} {/for}
- {for var=i from=10 downto=1} {$i} {/for}
+ * {for var=$i from=1 to=10} {$i} {/for}
+ {for var=$i from=10 downto=1} {$i} {/for}
  You can use the step parameter; it is automatically set to 1 for to and -1 for downto.
  * Display your variables: {$myVar} or {$myArray.var} for an array
  * Variable modifiers: $var|modifier
@@ -58,7 +58,7 @@ phpMyTemplate comes with a lot of features:
 Note: for the users functions or the assign function, you don't have to use quotes if the value does not have any spaces.
 
 ##Tricks##
-You can add ?raw to the URL: the result will be the templates and blocks fully merged, but the control structure and variables not processed.
+You can add ?raw to the URL: the result will be the templates and blocks fully merged, but the control structures and variables not processed.
 
 You can add ?tplnocache to the URL or define the constant TPL_DEBUG (defined by default, check class.tpl.php): it will force to recompile the template.
 
