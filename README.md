@@ -34,9 +34,7 @@ phpMyTemplate comes with a lot of features:
   * assign( array(name1 => value1, name2 => value2, ...) )
  * display: allows to choose the template file to use
  * Users function:
- ```php
- function tplfunction_myFunction ($params, $_tpl) { }
- ```
+ ``` function tplfunction_myFunction ($params, $_tpl) { } ```
  $params: array of the arguments (see the HTML section); $_tpl: the current tpl object in case you need it
 * In the HTML
  * {extends file=fname.tpl}: allows to make template inheritance
@@ -61,4 +59,7 @@ Note: for the users functions or the assign function, you don't have to use quot
 
 ##Tricks##
 You can add ?raw to the URL: the result will be the templates and blocks fully merged, but the control structure and variables not processed.
+
 You can add ?tplnocache to the URL or define the constant TPL_DEBUG (defined by default, check class.tpl.php): it will force to recompile the template.
+
+You can add ?format=json to the URL or use $tpl->display('json'): it will output in a JSON formatted string all the variables you have assigned in the template engine (useful for AJAX apps).
