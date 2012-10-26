@@ -1,7 +1,7 @@
 phpMyTemplate
 =============
 
-phpMyTemplate is a PHP template engine. It will allow you to separate the PHP code and the HTML so that you can more easily share the work in a team while keeping your code flexible and progressive.
+phpMyTemplate is a PHP template engine. It will allow you to separate the PHP code and the HTML so that you can more easily share the work in a team while keeping your code flexible and progressive. phpMyTemplate is capable of template inheritance, doing maths, it has the major structure controls, you can write your own functions, and it processes the content of the variables to check for template tags inside of them.
 
 ##Simple setup##
 
@@ -49,8 +49,12 @@ phpMyTemplate comes with a lot of features:
  {for var=i from=1 downto=10} {$i} {/for}
  You can use the step parameter; it is automatically set to 1 for to and -1 to downto.
  * Display your variables: {$myVar} or {$myArray.var} for an array
+ * Variable modifiers: $var|modifier
+ The currently existing modifiers are: capitalize, lower, count (for an array), nl2br, and default:defaultValue (if $var doesn't exist, defaultValue will be used instead).
  * Constants, _GET and _POST can be accessed in your templates: $tpl.const.constName or $tpl.get.getName or $tpl.post.postName
  * In a reasonable way, you can do maths: {assign var=tmpH value=$image.height/$image.width*1000>>0}
  * Users function: {myFunction arg1=val1 arg2=val2}
+ * There are two special characters: { and }; in order to actually display then in your templates, use {l} and {r}
+ * phpMyTemplate is also capable of parsing your variables to check for templates tags; it can be useful if for your website you edit the content online, and save it in a database. Just by doing {$myVarWithTemplateTags}, your variable will be analysed, processed and displayed.
 
 Note: for the users functions or the assign function, you don't have to use quotes if the value does not have any spaces.
