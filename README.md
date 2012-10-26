@@ -23,7 +23,7 @@ say_hello.tpl
 </html>
 ```
 
-Note that with this basic setup, the say_hello.tpl file has to be place in a subdirectoy templates/ with respect to say_hello.php
+Note that with this basic setup, the say_hello.tpl file has to be placed in a subdirectoy templates/ with respect to say_hello.php
 
 ##Features##
 phpMyTemplate comes with a lot of features:
@@ -47,7 +47,7 @@ phpMyTemplate comes with a lot of features:
  * {while expr} ... {/while}
  * {for var=i from=1 to=10} {$i} {/for}
  {for var=i from=10 downto=1} {$i} {/for}
- You can use the step parameter; it is automatically set to 1 for to and -1 to downto.
+ You can use the step parameter; it is automatically set to 1 for to and -1 for downto.
  * Display your variables: {$myVar} or {$myArray.var} for an array
  * Variable modifiers: $var|modifier
  The currently existing modifiers are: capitalize, lower, count (for an array), nl2br, and default:defaultValue (if $var doesn't exist, defaultValue will be used instead).
@@ -59,6 +59,6 @@ phpMyTemplate comes with a lot of features:
 
 Note: for the users functions or the assign function, you don't have to use quotes if the value does not have any spaces.
 
-##Trick##
+##Tricks##
 You can add ?raw to the URL: the result will be the templates and blocks fully merged, but the control structure and variables not processed.
 You can add ?tplnocache to the URL or define the constant TPL_DEBUG (defined by default, check class.tpl.php): it will force to recompile the template.
