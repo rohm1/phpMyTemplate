@@ -32,15 +32,15 @@ class tplcompile {
 		//write output
 		$deps = '<?php' . PHP_EOL;
 		$deps .= '$deps = array(' . PHP_EOL;
-		$mdCat = "";
-		foreach($this->dep as $file => $md5) {
-			$deps .= '\''.$file.'\' => \'' . $md5 . '\',' . PHP_EOL;
-			$mdCat .= $md5;
+		$mktimesCat = "";
+		foreach($this->dep as $file => $mktime) {
+			$deps .= '\''.$file.'\' => \'' . $mktime . '\',' . PHP_EOL;
+			$mktimesCat .= $mktime;
 		}
 		$deps .= ');' . PHP_EOL;
 		$deps .= '?>' . PHP_EOL;
 
-		$fname = 'tpl' . md5($mdCat);
+		$fname = 'tpl' . md5($mktimesCat);
 		$function = '<?php' . PHP_EOL;
 		$function .= '$function = \'' . $fname . '\';' . PHP_EOL;
 		$function .= '?>' . PHP_EOL;
@@ -56,7 +56,7 @@ class tplcompile {
 	}
 
 	private function addDep($file) {
-		$this->dep[$file] = md5(file_get_contents($file));
+		$this->dep[$file] = filemtime($file);
 	}
 
 	private function loadTpl($tplName) {

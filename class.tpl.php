@@ -5,13 +5,11 @@ require_once dirname(__FILE__) . '/class.tpltools.php';
  * constant DEBUG
  *  if defined, recompile all templates
  */
-
 define('TPL_DEBUG', 'debug');
 
 /**
  * class tpl
  */
-
 class tpl {
 	public $template_dir = '';
 	public $compile_dir  = '';
@@ -69,9 +67,9 @@ class tpl {
 					}
 					else {
 						include $compiled;
-						foreach($deps as $file => $md5) {
+						foreach($deps as $file => $mktime) {
 							$dir = dirname($file) . '/';
-							if(!in_array($dir, $this->template_dir) || md5(file_get_contents($file)) != $md5) {
+							if(!in_array($dir, $this->template_dir) || filemtime($file) != $mktime) {
 								$this->compile($tpl, $compiled);
 								include $compiled;
 								break;
@@ -89,9 +87,7 @@ class tpl {
 
 }
 
-/**
- * user's fonctions for the template engine
- */
+/* user's fonctions for the template engine */
 
 function tplfunction_assign($params, $_tpl) {
 	$_tpl->assign($params['var'], $params['value']);
