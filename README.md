@@ -39,6 +39,7 @@ phpMyTemplate comes with a lot of features:
 * HTML (for the designer)
  * {extends file=fname.tpl}: allows to make template inheritance
  * {block name=b1} ... {/block}: use blocks in your template inheritance to change the content of the master template's block. You can use the append=none|replace|append|prepend parameter. Default value is replace.
+ * {include file=myInclude.tpl}
  * {assign var=varName value="hello world!"}
  * {if expr} ... {elseif expr} ... {else} ... {/if}
  * {foreach $array as $k => $v} {$k} => {$v} {foreachelse} The array is empty! {/foreach}
@@ -50,7 +51,7 @@ phpMyTemplate comes with a lot of features:
  * Variable modifiers: $var|modifier
  The currently existing modifiers are: capitalize, lower, count (for an array), nl2br, and default:defaultValue (if $var doesn't exist, defaultValue will be used instead).
  * Constants, _GET and _POST can be accessed in your templates: $tpl.const.constName or $tpl.get.getName or $tpl.post.postName
- * In a reasonable way, you can do maths: {assign var=tmpH value=$image.height/$image.width*1000>>0}
+ * Maths: {assign var=tmpH value=$image.height/$image.width*1000>>0}
  * Users function: {myFunction arg1=val1 arg2=val2}
  * There are two special characters: { and }; in order to actually display then in your templates, use {l} and {r}
  * phpMyTemplate is also capable of parsing your variables to check for templates tags; it can be useful if for your website you edit the content online, and save it in a database. Just by doing {$myVarWithTemplateTags}, your variable will be analysed, processed and displayed.
