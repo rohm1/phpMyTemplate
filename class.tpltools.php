@@ -1,19 +1,91 @@
 <?php
+/*
+Copyright (c) 2011-2012, rohm1 <rp@rohm1.com>.
+All rights reserved.
 
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions
+are met:
+
+ * Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+
+ * Neither the name of rohm1 nor the names of his
+   contributors may be used to endorse or promote products derived
+   from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
+COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
+ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+*/
+
+/**
+ * Class tpltools
+ * Static class providing tools to the template engine
+ */
 class tpltools {
-
+	/**
+	 * RegExp used to check a variable name
+	 *
+	 * @var string
+	 */
 	public static $varreg    = '[a-zA-Z0-9_\.\[\]\$]';
+
+	/**
+	 * RegExp used to check a vriable name that also contains modifiers
+	 *
+	 * @var string
+	 */
 	public static $varreg2   = '[a-zA-Z0-9_\|:\.\$-]';
+
+	/**
+	 * RegExp used to check a file name
+	 *
+	 * @var string
+	 */
 	public static $filereg   = '[a-zA-Z0-9_\.-]';
+
+	/**
+	 * Special template tags
+	 *
+	 * @var array
+	 */
 	public static $specials  = array('{l}', '{r}');
+
+	/**
+	 * Replacements for the special template tags
+	 *
+	 * @var array
+	 */
 	public static $rspecials = array('{', '}');
 
-	public function analyseAndTransform($tpl) {
+	/**
+	 * Shortcut method that combines self::vars() and self::logicAndTags()
+	 *
+	 * @param string $tpl the template string to process
+	 * @return string processed template string
+	 */
+	public static function analyseAndTransform($tpl) {
 		return tpltools::vars( tpltools::logicAndTags($tpl) );
 	}
 
-	//format: {fn p=v ...}
-	public function readParams($expr) {
+	/**
+	 * Reads the parameters in an expression
+	 * format: {fn p=v ...}
+	 *
+	 * @param string $exp the expression to analyse
+	 * @return array an array containing the parameters of the expression
+	 */
+	public static function readParams($expr) {
 		$p = array('function' => '', 'params' => array());
 		$l = strlen($expr);
 		$i = 1;
@@ -76,7 +148,14 @@ class tpltools {
 		return $p;
 	}
 
-	public function logicAndTags($tpl) {
+	/**
+	 * Replaces logic template tags by PHP logic and control structures
+	 * Also replaces the user functions
+	 *
+	 * @param string $tpl the template string to process
+	 * @return string processed template string
+	 */
+	public static function logicAndTags($tpl) {
 		preg_match_all('#{(.*)}#U', $tpl, $tags);
 		foreach($tags[1] as $k => $tag) {
 			$a = explode(' ', $tag);
@@ -127,7 +206,15 @@ class tpltools {
 		return $tpl;
 	}
 
-	public function modifier($var, $modifier, $default='') {
+	/**
+	 * Modifies the given variable according to the given modifier
+	 *
+	 * @param string $var the variable to modify
+	 * @param string $modifier the modifier to use
+	 * @param string $default default value to use with some modifiers
+	 * @return string the modified variable
+	 */
+	public static function modifier($var, $modifier, $default='') {
 		switch($modifier) {
 			case 'capitalize':
 				$str = explode(' ', $var);
@@ -150,8 +237,17 @@ class tpltools {
 		}
 	}
 
-	public function parseVar($var, $modifiers, $returnMethod, $_tpl) {
-
+	/**
+	 * Modifies a variable and check for template tags in it
+	 *
+	 * @param string $var the variable to process
+	 * @param string $modifiers the modifiers to apply to the variable
+	 * @param string $returnMethod the return method to use (echo|return)
+	 * @param object $_tpl the current template object
+	 * @return mixed a string if returnMethod=='echo', void else
+	 * @see self::modifier()
+	 */
+	public static function parseVar($var, $modifiers, $returnMethod, $_tpl) {
 		$modifiers = explode('|', $modifiers);
 		foreach($modifiers as $modifier) {
 			$t = explode(':', $modifier);
@@ -165,7 +261,13 @@ class tpltools {
 		else                        return $var;
 	}
 
-	public function vars($tpl) {
+	/**
+	 * Processes the variables in a template string
+	 *
+	 * @param string $tpl the template string to process
+	 * @return string processed template string
+	 */
+	public static function vars($tpl) {
 		//echo vars and vars modifiers
 		$tpl = preg_replace('#{\$('.tpltools::$varreg.'+)(\|)*('.tpltools::$varreg2.'*)}#', '<?php tpltools::parseVar(@$$1, \'$3\', "echo", $_tpl); ?>', $tpl);
 		$tpl = preg_replace('#\$('.tpltools::$varreg.'+)\|('.tpltools::$varreg2.'*)#', 'tpltools::parseVar(@$$1, \'$2\', "return", $_tpl)', $tpl);
