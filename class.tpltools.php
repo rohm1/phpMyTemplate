@@ -46,6 +46,7 @@ class tpltools {
 	 * @var string
 	 */
 	public static $varreg2   = '[a-zA-Z0-9_\|:\.\$-]';
+	//~ public static $varreg2   = '[^\{\}.]';
 
 	/**
 	 * RegExp used to check a file name
@@ -228,10 +229,14 @@ class tpltools {
 			case 'nl2br':
 				return nl2br($var);
 			case 'default':
-				if(isset($var))
+				if(isset($var) && !empty($var))
 					return $var;
-				else
-					return $default;
+				else {
+					if(in_array(substr($default, 0, 1), array('"', "'")))
+						return substr($default, 1, strlen($default) - 2);
+					else
+						return $default;
+				}
 			default:
 				return $var;
 		}
@@ -269,7 +274,7 @@ class tpltools {
 	 */
 	public static function vars($tpl) {
 		//echo vars and vars modifiers
-		$tpl = preg_replace('#{\$('.tpltools::$varreg.'+)(\|)*('.tpltools::$varreg2.'*)}#', '<?php tpltools::parseVar(@$$1, \'$3\', "echo", $_tpl); ?>', $tpl);
+		$tpl = preg_replace('#{\$('.tpltools::$varreg.'+)(\|?)('.tpltools::$varreg2.'*)}#', '<?php tpltools::parseVar(@$$1, \'$3\', "echo", $_tpl); ?>', $tpl);
 		$tpl = preg_replace('#\$('.tpltools::$varreg.'+)\|('.tpltools::$varreg2.'*)#', 'tpltools::parseVar(@$$1, \'$2\', "return", $_tpl)', $tpl);
 
 		//vars transformation

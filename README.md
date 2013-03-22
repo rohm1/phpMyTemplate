@@ -1,7 +1,7 @@
 phpMyTemplate
 =============
 
-phpMyTemplate is a PHP template engine. It will allow you to separate the PHP code and the HTML so that you can more easily share the work in a team while keeping your code flexible and progressive. phpMyTemplate is capable of template inheritance, doing maths, it has the major structure controls, you can write your own functions, and it processes the content of the variables to check for template tags inside of them. Templates are compiled to PHP and cached.
+phpMyTemplate is a PHP template engine. It will allow you to separate the PHP code and the HTML so that you can more easily share the work in a team while keeping your code flexible and progressive. phpMyTemplate is capable of template inheritance, doing maths, it has the major structure controls, you can write your own functions, and it processes the content of the variables to check for template tags inside of them. Templates are compiled to PHP and cached. You can also cache the result of a display so that templates are not processed anymore.
 
 ##Basic setup##
 
@@ -32,7 +32,10 @@ phpMyTemplate comes with a lot of features:
  * assign: assigns variables that can be retrieved in the HTML
   assign(name, value)
   assign( array(name1 => value1, name2 => value2, ...) )
- * display: allows to choose the template file to use
+ * display: allows to choose the template file to use and displays the result
+ * capture: like display, but returns the result instead
+ * get_cached_file: retrieves a cached file; you can specify the file's max age. To be used in combination with ```cache_file()```
+ * cache_file: caches a file. To be used in combination with ```get_cached_file()``` and ```capture()```
  * Users function:
  ``` function tplfunction_myFunction ($params, $_tpl) { } ```
  $params: array of the arguments (see the HTML section); $_tpl: the current tpl object in case you need it
@@ -58,15 +61,17 @@ phpMyTemplate comes with a lot of features:
 
 Note: for the users functions or the assign function, you don't have to use quotes if the value does not have any spaces.
 
-##Tricks##
-You can add ?raw to the URL: the result will be the templates and blocks fully merged, but the control structures and variables not processed.
+##URL tricks##
+You can add ?tplraw to the URL: the result will be the templates and blocks fully merged, but the control structures and variables not processed.
 
-You can add ?tplnocache to the URL or define the constant TPL_DEBUG (defined by default, check class.tpl.php): it will force to recompile the template.
+You can add ?tplnocompilecache to the URL or define the constant TPL_DEBUG: it will force to recompile the templates.
 
-You can add ?format=json to the URL or use $tpl->display('json'): it will output in a JSON formatted string all the variables you have assigned in the template engine (useful for AJAX apps).
+You can add ?tplnocontentcache to the URL: it will force not to use the cached file.
+
+You can add ?format=json to the URL or use $tpl->display('json'): it will output in a JSON formatted string all the variables you have assigned to the template engine (useful for AJAX apps).
 
 ##Licence##
-Copyright (c) 2011-2012, rohm1 <rp@rohm1.com>.
+Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without

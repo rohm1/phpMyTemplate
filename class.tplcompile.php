@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (c) 2011-2012, rohm1 <rp@rohm1.com>.
+Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -84,7 +84,7 @@ class tplcompile {
 		$this->replaceBlocks();
 
 		//raw output
-		if(isset($_GET['raw']))
+		if(isset($_GET['tplraw']))
 			die($this->tpl);
 
 		//tpl logic tags and user's functions, vars

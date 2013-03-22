@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (c) 2011-2012, rohm1 <rp@rohm1.com>.
+Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -34,10 +34,10 @@ POSSIBILITY OF SUCH DAMAGE.
 require_once dirname(__FILE__) . '/class.tpltools.php';
 
 /**
- * constant DEBUG
- * if defined, recompile all templates
+ * constant TPL_DEBUG
+ * if defined, recompiles all templates
  */
-define('TPL_DEBUG', 'debug');
+//~ define('TPL_DEBUG', 'debug');
 
 /**
  * Class tpl
@@ -59,6 +59,13 @@ class tpl {
 	public $compile_dir;
 
 	/**
+	 * Directory where resulting pages are cached
+	 *
+	 * @var string
+	 */
+	public $cache_dir;
+
+	/**
 	 * List of variables assigned in the PHP code and that can be retrieved in the templates
 	 *
 	 * @var array
@@ -75,6 +82,7 @@ class tpl {
 	public function __construct($newDir = '') {
 		$this->template_dir = array(getcwd() . '/templates/');
 		$this->compile_dir  = getcwd() . '/templates_c/';
+		$this->cache_dir  = getcwd() . '/pages_c/';
 
 		if($newDir != '')
 			$this->addDir($newDir);
@@ -112,6 +120,20 @@ class tpl {
 	}
 
 	/**
+	 * Return whether to use the cache or nor
+	 *
+	 * @param string $fname the file to check for
+	 * @return boolean
+	 */
+	private function use_cache($fname) {
+		return !defined('TPL_DEBUG')               &&
+			!isset($_GET['tplnocompilecache']) &&
+			!isset($_GET['tplnocontentcache']) &&
+			!isset($_GET['tplraw'])            &&
+			file_exists($fname);
+	}
+
+	/**
 	 * Compiles a template file
 	 *
 	 * @param string $tplFile absolute path to the template source
@@ -141,8 +163,8 @@ class tpl {
 					$this->vars['tpl']['post'] = $_POST;
 
 					$tpl = $dir . $file;
-					$compiled = $this->compile_dir . str_replace('/', '.', $tpl);
-					if(defined('TPL_DEBUG') || isset($_GET['tplnocache']) || isset($_GET['raw']) || !file_exists($compiled)) {
+					$compiled = $this->compile_dir . md5($tpl) . '.php';
+					if(!$this->use_cache($compiled)) {
 						$this->compile($tpl, $compiled);
 						require $compiled;
 					}
@@ -165,6 +187,51 @@ class tpl {
 		}
 	}
 
+	/**
+	 * Returns the result of the template instead of displaying it
+	 *
+	 * @param string $file the template file name to use
+	 * @return string the result of the template
+	 * @see tpl::display()
+	 */
+	public function capture($file = '') {
+		ob_start();
+		$this->display($file);
+		$html = ob_get_contents();
+		ob_end_clean();
+
+		return $html;
+	}
+
+	/**
+	 * Retrieves a cached file
+	 *
+	 * @param string $file the file name
+	 * @param int $max_age max age of the file, in seconds
+	 * @return mixed the cached file content if the cached file exists
+	 * and younger than $max_age, false otherwise
+	 */
+	public function get_cached_file($file, $max_age = 3600) {
+		$fname = $this->cache_dir . md5($file) . '.html';
+
+		if($this->use_cache($fname) && time() - filemtime($fname) < $max_age)
+				return file_get_contents($fname);
+
+		return false;
+	}
+
+	/**
+	 * Caches a file to tpl::$cache_dir
+	 *
+	 * @param string $file the file name
+	 * @param string $content the content of the file
+	 * @return void
+	 */
+	public function cache_file($file, $content) {
+		$f = fopen($this->cache_dir . md5($file) . '.html', 'w');
+		fwrite($f, $content);
+		fclose($f);
+	}
 
 }
 
