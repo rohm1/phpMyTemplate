@@ -169,12 +169,12 @@ class tpl {
 						require $compiled;
 					}
 					else {
-						include $compiled;
+						require $compiled;
 						foreach($deps as $file => $md5) {
 							$dir = dirname($file) . '/';
 							if(!in_array($dir, $this->template_dir) || md5(file_get_contents($file)) != $md5) {
 								$this->compile($tpl, $compiled);
-								include $compiled;
+								require $compiled;
 								break;
 							}
 						}
@@ -215,7 +215,7 @@ class tpl {
 		$fname = $this->cache_dir . md5($file) . '.html';
 
 		if($this->use_cache($fname) && time() - filemtime($fname) < $max_age)
-				return file_get_contents($fname);
+			return file_get_contents($fname);
 
 		return false;
 	}

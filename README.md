@@ -62,13 +62,26 @@ phpMyTemplate comes with a lot of features:
 Note: for the users functions or the assign function, you don't have to use quotes if the value does not have any spaces.
 
 ##URL tricks##
-You can add ?tplraw to the URL: the result will be the templates and blocks fully merged, but the control structures and variables not processed.
+* ?tplraw: returns the compiled template as PHP code
+* ?tplnocompilecache or define the constant TPL_DEBUG: forces to recompile the templates
+* ?tplnocontentcache: forces not to use the cached file
+* ?format=json or use $tpl->display('json'): outputs in a JSON formatted string all the variables you have assigned to the template engine (useful for AJAX apps)
 
-You can add ?tplnocompilecache to the URL or define the constant TPL_DEBUG: it will force to recompile the templates.
+##Note on how to use the second cache level##
+The first cache level (caching the compiled templates) is managed internally by the template engine, you don't have to do nothing besides using ?tplnocompilecache or defining TPL_DEBUG to recompile your templates. The idea comming with the second cache level is the following: you generate your page with content retrieved from a database that you input to the templates, but this content does not changes that fast, so you can cache the resulting generated HTML code.
 
-You can add ?tplnocontentcache to the URL: it will force not to use the cached file.
+```php
+if(($page = $tpl->get_cached_file($_SERVER['REQUEST_URI'], 3600 /*default time in seconds a cached HTML is valid*/)) == false) {
+	/** some code to retrieve your data and input it to the template engine **/
 
-You can add ?format=json to the URL or use $tpl->display('json'): it will output in a JSON formatted string all the variables you have assigned to the template engine (useful for AJAX apps).
+	$page = $tpl->capture('template.tpl');
+	$tpl->cache_file($_SERVER['REQUEST_URI'], $page);
+}
+
+echo $page;
+```
+
+With this example, your HTML will be cached one hour, and regenarated after that. You can of course change this value as you please, or use ?tplnocontentcache to generate a new HTML.
 
 ##Licence##
 Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.

@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
  * Class tplcompile
- * It compiles a template file in PHP code ans caches the result.
+ * It compiles a template file in PHP code and caches the result.
  */
 class tplcompile {
 	/**
@@ -55,7 +55,7 @@ class tplcompile {
 	private $template_dir = array();
 
 	/**
-	 * List of blocks of the template
+	 * List of the blocks of the template
 	 *
 	 * @var array
 	 */
@@ -83,12 +83,12 @@ class tplcompile {
 		//blocks replacements
 		$this->replaceBlocks();
 
+		//tpl logic tags and user's functions, vars
+		$this->tpl = tpltools::analyseAndTransform($this->tpl);
+
 		//raw output
 		if(isset($_GET['tplraw']))
 			die($this->tpl);
-
-		//tpl logic tags and user's functions, vars
-		$this->tpl = tpltools::analyseAndTransform($this->tpl);
 
 		//write output
 		$deps = '<?php' . PHP_EOL;
