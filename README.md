@@ -71,7 +71,7 @@ Note: for the users functions or the assign function, you don't have to use quot
 The first cache level (caching the compiled templates) is managed internally by the template engine, you don't have to do nothing besides using ?tplnocompilecache or defining TPL_DEBUG to recompile your templates. The idea comming with the second cache level is the following: you generate your page with content retrieved from a database that you input to the templates, but this content does not changes that fast, so you can cache the resulting generated HTML code.
 
 ```php
-if(($page = $tpl->get_cached_file($_SERVER['REQUEST_URI'], 3600 /*default time in seconds a cached HTML is valid*/)) == false) {
+if(($page = $tpl->get_cached_file($_SERVER['REQUEST_URI'], 3600)) == false) {
 	/** some code to retrieve your data and input it to the template engine **/
 
 	$page = $tpl->capture('template.tpl');
