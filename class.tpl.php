@@ -72,6 +72,11 @@ class tpl {
 	 */
 	public $vars   = array();
 
+	/**
+	 * The current page's name
+	 */
+	private $page_name = '';
+
 
 	/**
 	 * Constructor
@@ -191,14 +196,22 @@ class tpl {
 	 * Returns the result of the template instead of displaying it
 	 *
 	 * @param string $file the template file name to use
+	 * @param boolean $save whether to save the capture or not
+	 * 	captures are saved to to tpl::$cache_dir
 	 * @return string the result of the template
 	 * @see tpl::display()
 	 */
-	public function capture($file = '') {
+	public function capture($file = '', $save = true) {
 		ob_start();
 		$this->display($file);
 		$html = ob_get_contents();
 		ob_end_clean();
+
+		if($save) {
+			$f = fopen($this->cache_dir . md5($this->get_page_name() . $file) . '.html', 'w');
+			fwrite($f, $html);
+			fclose($f);
+		}
 
 		return $html;
 	}
@@ -206,31 +219,31 @@ class tpl {
 	/**
 	 * Retrieves a cached file
 	 *
-	 * @param string $file the file name
+	 * @param string $file the template file name to use
 	 * @param int $max_age max age of the file, in seconds
 	 * @return mixed the cached file content if the cached file exists
 	 * and younger than $max_age, false otherwise
 	 */
 	public function get_cached_file($file, $max_age = 3600) {
-		$fname = $this->cache_dir . md5($file) . '.html';
+		$fname = $this->cache_dir . md5($this->get_page_name() . $file) . '.html';
 
-		if($this->use_cache($fname) && time() - filemtime($fname) < $max_age)
+		if($this->use_cache($fname) && time() - @filemtime($fname) < $max_age)
 			return file_get_contents($fname);
 
 		return false;
 	}
 
 	/**
-	 * Caches a file to tpl::$cache_dir
+	 * Returns the current URI cleaned of the templates' variables
 	 *
-	 * @param string $file the file name
-	 * @param string $content the content of the file
-	 * @return void
+	 * @return current URI cleaned
 	 */
-	public function cache_file($file, $content) {
-		$f = fopen($this->cache_dir . md5($file) . '.html', 'w');
-		fwrite($f, $content);
-		fclose($f);
+	private function get_page_name() {
+		if($this->page_name == '')
+			$this->page_name = $_SERVER['SCRIPT_FILENAME'] . '?' .
+				preg_replace('#\&{2,}#', '&', str_replace(array('tplnocompilecache', 'tplnocontentcache', 'tplraw'), '', $_SERVER['QUERY_STRING']));
+
+		return $this->page_name;
 	}
 
 }

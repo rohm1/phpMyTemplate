@@ -33,9 +33,8 @@ phpMyTemplate comes with a lot of features:
   assign(name, value)
   assign( array(name1 => value1, name2 => value2, ...) )
  * display: allows to choose the template file to use and displays the result
- * capture: like display, but returns the result instead
- * get_cached_file: retrieves a cached file; you can specify the file's max age. To be used in combination with ```cache_file()```
- * cache_file: caches a file. To be used in combination with ```get_cached_file()``` and ```capture()```
+ * capture: like display, but returns the result instead. The result can be saved by setting the second parameter to true
+ * get_cached_file: retrieves a cached file; you can specify the file's max age. To be used in combination with ```capture('template.tpl', true)```
  * Users function:
  ``` function tplfunction_myFunction ($params, $_tpl) { } ```
  $params: array of the arguments (see the HTML section); $_tpl: the current tpl object in case you need it
@@ -67,21 +66,22 @@ Note: for the users functions or the assign function, you don't have to use quot
 * ?tplnocontentcache: forces not to use the cached file
 * ?format=json or use $tpl->display('json'): outputs in a JSON formatted string all the variables you have assigned to the template engine (useful for AJAX apps)
 
-##Note on how to use the second cache level##
+##The second cache level##
 The first cache level (caching the compiled templates) is managed internally by the template engine, you don't have to do nothing besides using ?tplnocompilecache or defining TPL_DEBUG to recompile your templates. The idea comming with the second cache level is the following: you generate your page with content retrieved from a database that you input to the templates, but this content does not changes that fast, so you can cache the resulting generated HTML code.
 
 ```php
-if(($page = $tpl->get_cached_file($_SERVER['REQUEST_URI'], 3600)) == false) {
+if(($page = $tpl->get_cached_file('template.tpl', 3600)) == false) {
 	/** some code to retrieve your data and input it to the template engine **/
 
-	$page = $tpl->capture('template.tpl');
-	$tpl->cache_file($_SERVER['REQUEST_URI'], $page);
+	$page = $tpl->capture('template.tpl', true);
 }
 
 echo $page;
 ```
 
 With this example, your HTML will be cached one hour, and regenarated after that. You can of course change this value as you please, or use ?tplnocontentcache to generate a new HTML.
+
+Note: the second cache level is built upon the first cache level, so if there is a change in your template, it will not be taken into account until a new HTML is generated.
 
 ##Licence##
 Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
