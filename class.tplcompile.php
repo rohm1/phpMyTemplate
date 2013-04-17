@@ -207,7 +207,7 @@ class tplcompile {
 			foreach($blockVersions as $k => $v) {
 				switch($append) {
 					case 'none'   : $content = $v['content']; break;
-					case 'replace': $content = $content; break;
+					case 'replace': break;
 					case 'append' : $content = $v['content'] . $content; break;
 					case 'prepend': $content .= $v['content']; break;
 					default: break;

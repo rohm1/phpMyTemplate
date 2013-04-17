@@ -63,7 +63,7 @@ class tpl {
 	 *
 	 * @var string
 	 */
-	public $cache_dir;
+	public $content_dir;
 
 	/**
 	 * List of variables assigned in the PHP code and that can be retrieved in the templates
@@ -87,7 +87,7 @@ class tpl {
 	public function __construct($newDir = '') {
 		$this->template_dir = array(getcwd() . '/templates/');
 		$this->compile_dir  = getcwd() . '/templates_c/';
-		$this->cache_dir  = getcwd() . '/pages_c/';
+		$this->content_dir  = getcwd() . '/pages_c/';
 
 		if($newDir != '')
 			$this->addDir($newDir);
@@ -197,7 +197,7 @@ class tpl {
 	 *
 	 * @param string $file the template file name to use
 	 * @param boolean $save whether to save the capture or not
-	 * 	captures are saved to to tpl::$cache_dir
+	 * 	captures are saved to to tpl::$content_dir
 	 * @return string the result of the template
 	 * @see tpl::display()
 	 */
@@ -208,9 +208,11 @@ class tpl {
 		ob_end_clean();
 
 		if($save) {
-			$f = fopen($this->cache_dir . md5($this->get_page_name() . $file) . '.html', 'w');
-			fwrite($f, $html);
-			fclose($f);
+			$f = @fopen($this->content_dir . md5($this->get_page_name() . $file) . '.html', 'w');
+			if($f) {
+				fwrite($f, $html);
+				fclose($f);
+			}
 		}
 
 		return $html;
@@ -222,10 +224,10 @@ class tpl {
 	 * @param string $file the template file name to use
 	 * @param int $max_age max age of the file, in seconds
 	 * @return mixed the cached file content if the cached file exists
-	 * and younger than $max_age, false otherwise
+	 * 	and younger than $max_age, false otherwise
 	 */
 	public function get_cached_file($file, $max_age = 3600) {
-		$fname = $this->cache_dir . md5($this->get_page_name() . $file) . '.html';
+		$fname = $this->content_dir . md5($this->get_page_name() . $file) . '.html';
 
 		if($this->use_cache($fname) && time() - @filemtime($fname) < $max_age)
 			return file_get_contents($fname);
@@ -244,6 +246,44 @@ class tpl {
 				preg_replace('#\&{2,}#', '&', str_replace(array('tplnocompilecache', 'tplnocontentcache', 'tplraw'), '', $_SERVER['QUERY_STRING']));
 
 		return $this->page_name;
+	}
+
+	/**
+	 * Clears the compile cache
+	 *
+	 * @return void
+	 * @see tpl::clear_dir()
+	 */
+	public function clear_compile_cache() {
+		$this->clear_dir($this->compile_dir);
+	}
+
+	/**
+	 * Clears the content cache
+	 *
+	 * @return void
+	 * @see tpl::clear_dir()
+	 */
+	public function clear_content_cache() {
+		$this->clear_dir($this->content_dir);
+	}
+
+	/**
+	 * Clears a directory
+	 *
+	 * @return void
+	 * @param string $dir the directory to clear
+	 */
+	private function clear_dir($dir) {
+		$handle = opendir($dir);
+		if($handle) {
+			while(false !== ($fname = readdir($handle))) {
+				if ($fname != '.' && $fname != '..' &&
+					$fname != 'index.php' && $fname != '.htaccess' /*to protect a directory*/)
+					@unlink($dir . $fname);
+			}
+		   closedir($handle);
+		}
 	}
 
 }
