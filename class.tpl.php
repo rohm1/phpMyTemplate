@@ -77,8 +77,7 @@ class tpl
     /**
      * The current page name
      */
-    private $page_name = '';
-
+    protected $page_name = '';
 
     /**
      * Constructor
@@ -266,7 +265,7 @@ class tpl
      *
      * @return current URI cleaned
      */
-    private function get_page_name()
+    protected function get_page_name()
     {
         if ($this->page_name == '') {
             $query_string = preg_replace('#\&{2,}#', '&', str_replace(array('tplnocompilecache', 'tplnocontentcache', 'tplraw'), '', $_SERVER['QUERY_STRING']));

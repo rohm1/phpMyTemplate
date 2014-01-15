@@ -7,34 +7,35 @@ See class.tpl.php for license infos
  * Class tplcompile
  * It compiles a template file in PHP code and caches the result.
  */
-class tplcompile {
+class tplcompile
+{
     /**
      * The list of files this template depends of
      *
      * @var array
      */
-    private $dep = array();
+    protected $dep = array();
 
     /**
      * The template result
      *
      * @var string
      */
-    private $tpl = '';
+    protected $tpl = '';
 
     /**
      * List of directories where to look for the template files
      *
      * @var array
      */
-    private $template_dir = array();
+    protected $template_dir = array();
 
     /**
      * List of the blocks of the template
      *
      * @var array
      */
-    private $blocks = array();
+    protected $blocks = array();
 
     /**
      * Constructor
@@ -99,7 +100,7 @@ class tplcompile {
      * @param string $file template file absolute path
      * @return void
      */
-    private function addDep($file)
+    protected function addDep($file)
     {
         $this->dep[$file] = md5(file_get_contents($file));
     }
@@ -110,7 +111,7 @@ class tplcompile {
      * @param string $tplName the absolute path to the template file to load
      * @return void
      */
-    private function loadTpl($tplName)
+    protected function loadTpl($tplName)
     {
         if (($tpl = $this->lookForTpl($tplName)) !== false) {
             $this->tpl = file_get_contents($tpl);
@@ -124,7 +125,7 @@ class tplcompile {
      * @param string $name the template file name
      * @return mixed absolute path to the file if found, false else
      */
-    private function lookForTpl($name)
+    protected function lookForTpl($name)
     {
         foreach ($this->template_dir as $dir) {
             if (file_exists($dir . $name)) {
@@ -142,7 +143,7 @@ class tplcompile {
      * @return void
      * @see self::$blocks
      */
-    private function searchBlocks($tpl)
+    protected function searchBlocks($tpl)
     {
         $r = array();
         $blockStarts = array();
@@ -184,7 +185,7 @@ class tplcompile {
      *
      * @return void
      */
-    private function replaceBlocks()
+    protected function replaceBlocks()
     {
         $finalBlocks = array();
         foreach ($this->blocks as $blockVersions) {
@@ -217,7 +218,7 @@ class tplcompile {
      * @return void
      * @see self::searchBlocks()
      */
-    private function fillBlocks($finalBlocks)
+    protected function fillBlocks($finalBlocks)
     {
         $this->blocks = array();
         $this->searchBlocks($this->tpl);
@@ -236,7 +237,7 @@ class tplcompile {
      * @param string $tpl the template string to analyse
      * @return void
      */
-    private function tplIncludesAndExtends($tpl)
+    protected function tplIncludesAndExtends($tpl)
     {
         preg_match_all('#{include([[:blank:]]+)file=('.tpltools::$filereg.'+)}#', $tpl, $includes);
         foreach ($includes[2] as $k => $include) {
