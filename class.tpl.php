@@ -1,6 +1,6 @@
 <?php
 /*
-Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
+Copyright (c) 2011-2014, rohm1 <rp@rohm1.com>.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -78,6 +78,13 @@ class tpl
      * The current page name
      */
     protected $page_name = '';
+
+    /**
+     * A cache of the already loaded templates
+     *
+     * @var array
+     */
+    protected $compiledTemplates = [];
 
     /**
      * Constructor
@@ -179,37 +186,45 @@ class tpl
      */
     public function display($file = '')
     {
-        if ($file == 'json' || (isset($_GET['format']) && $_GET['format'] == 'json')) {
-            echo json_encode($this->vars);
+        if (!empty($_GET['callback'])) {
+            echo $_GET['callback'] . '(' . json_encode($this->exportVars()) . ')';
+        } elseif ($file == 'json' || (!empty($_GET['format']) && $_GET['format'] == 'json')) {
+            echo json_encode($this->exportVars());
         } else {
-            foreach ($this->template_dir as $dir) {
-                if (file_exists($dir . $file)) {
-                    $this->assign('tpl', array(
-                        'const' => get_defined_constants(),
-                        'get'   => $_GET,
-                        'post'  => $_POST,
-                    ));
+            if (!isset($this->compiledTemplates[$file])) {
+                foreach ($this->template_dir as $dir) {
+                    if (file_exists($dir . $file)) {
+                        $this->assign('tpl', array(
+                            'const' => get_defined_constants(),
+                            'get'   => $_GET,
+                            'post'  => $_POST,
+                        ));
 
-                    $tpl = $dir . $file;
-                    $compiled = $this->compile_dir . str_replace(array('/', ' '), array('__', '-'), $tpl) . '.php';
-                    if (!$this->use_cache($compiled)) {
-                        $this->compile($tpl, $compiled);
-                        require $compiled;
-                    } else {
-                        require $compiled;
-                        foreach ($deps as $file => $md5) {
-                            $dir = dirname($file) . '/';
-                            if (!in_array($dir, $this->template_dir) || md5(file_get_contents($file)) != $md5) {
-                                $this->compile($tpl, $compiled);
-                                require $compiled;
-                                break;
+                        $tpl = $dir . $file;
+                        $compiled = $this->compile_dir . str_replace(array('/', ' '), array('__', '-'), $tpl) . '.php';
+                        if (!$this->use_cache($compiled)) {
+                            $this->compile($tpl, $compiled);
+                            $result = require $compiled;
+                        } else {
+                            $result = require $compiled;
+                            foreach ($result['deps'] as $dep => $md5) {
+                                $dir = dirname($dep) . '/';
+                                if (!in_array($dir, $this->template_dir) || md5(file_get_contents($dep)) != $md5) {
+                                    $this->compile($tpl, $compiled);
+                                    $result = require $compiled;
+                                    break;
+                                }
                             }
                         }
-                    }
 
-                    call_user_func($function, $this);
-                    break;
+                        $this->compiledTemplates[$file] = $result['tpl'];
+                        break;
+                    }
                 }
+            }
+
+            if (isset($this->compiledTemplates[$file])) {
+                call_user_func($this->compiledTemplates[$file], $this);
             }
         }
     }
@@ -320,6 +335,26 @@ class tpl
             }
            closedir($handle);
         }
+    }
+
+    /**
+     * Prepares the exportation of the assigned variables
+     *
+     * @return array
+     */
+    protected function exportVars()
+    {
+        $vars = [];
+
+        foreach ($this->vars as $name => $var) {
+            if (empty($var['_parse_'])) {
+                $vars[$name] = $var['_value_'];
+            } else {
+                $vars[$name] = tpltools::getVar($var);
+            }
+        }
+
+        return $vars;
     }
 
 }

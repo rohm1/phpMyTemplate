@@ -177,7 +177,7 @@ class tpltools
                 $foreachelse_id = uniqid();
                 $r = '<?php endwhile; else:' . PHP_EOL .
                     '$_tpl->assign("_foreachelse_' . $foreachelse_id . '", true); ' . PHP_EOL .
-                    'while ($_foreachelse_' . $foreachelse_d . '):' . PHP_EOL .
+                    'while ($_foreachelse_' . $foreachelse_id . '):' . PHP_EOL .
                     '$_tpl->assign("_foreachelse_' . $foreachelse_id . '", false); ' .
                     '?>';
             } elseif ($t == '/foreach') $r = '<?php endwhile; endif; ?>';
@@ -192,7 +192,7 @@ class tpltools
                 $r = '<?php' . PHP_EOL .
                     '$_tpl->assign("_loop_' . $for_id . '", ' . $args['from'] . '); ' . PHP_EOL .
                     'while ($_loop_' . $for_id . (isset($args['to']) ? ' <= '.$args['to'] : ' >= ' .$args['downto']) . '): ' . PHP_EOL .
-                    '$_tpl->assign("' . substr($args['var'], 1) . '", $_loop_' . $for_id .']]); ' . PHP_EOL .
+                    '$_tpl->assign("' . substr($args['var'], 1) . '", $_loop_' . $for_id .'); ' . PHP_EOL .
                     '$_tpl->assign("_loop_' . $for_id . '", $_loop_' . $for_id . ' + ' . $args['step'] . '); ' .
                     '?>';
             }
@@ -242,6 +242,12 @@ class tpltools
                 return sizeof($var);
             case 'nl2br':
                 return nl2br($var);
+            case 'ceil':
+                return ceil($var);
+            case 'floor':
+                return floor($var);
+            case 'round':
+                return round($var);
             case 'default':
                 if (isset($var) && !empty($var)) {
                     return $var;
@@ -263,11 +269,10 @@ class tpltools
      * @param string $var the variable to process
      * @param string $modifiers the modifiers to apply to the variable
      * @param string $returnMethod the return method to use (echo|return)
-     * @param object $_tpl the current template object
      * @return mixed a string if returnMethod=='echo', void else
      * @see self::modifier()
      */
-    public static function getVar($var, $modifiers, $returnMethod, $_tpl)
+    public static function getVar($var, $modifiers = '', $returnMethod = 'return')
     {
         $parse = isset($var['_parse_']) && $var['_parse_'];
         $var = is_array($var) && array_key_exists('_value_', $var) ? $var['_value_'] : $var;
@@ -298,8 +303,8 @@ class tpltools
     public static function vars($tpl)
     {
         //echo vars and vars modifiers
-        $tpl = preg_replace('#{\$('.tpltools::$varreg.'+)(\|?)('.tpltools::$varreg2.'*)}#', '<?php tpltools::getVar(@$$1, \'$3\', "echo", $_tpl); ?>', $tpl);
-        $tpl = preg_replace('#\$('.tpltools::$varreg.'+)\|('.tpltools::$varreg2.'*)#', 'tpltools::getVar(@$$1, \'$2\', "return", $_tpl)', $tpl);
+        $tpl = preg_replace('#{\$('.tpltools::$varreg.'+)(\|?)('.tpltools::$varreg2.'*)}#', '<?php tpltools::getVar(@$$1, \'$3\', "echo"); ?>', $tpl);
+        $tpl = preg_replace('#\$('.tpltools::$varreg.'+)\|('.tpltools::$varreg2.'*)#', 'tpltools::getVar(@$$1, \'$2\', "return")', $tpl);
 
         //vars transformation
         preg_match_all('#\$('.tpltools::$varreg.'+)#', $tpl, $matches, PREG_OFFSET_CAPTURE);
@@ -320,7 +325,7 @@ class tpltools
                             $_r[] = '"'.$v.'"';
                         }
                     }
-                    $varreplacement = 'tpltools::getVar(@$_tpl->vars['.implode('][', $_r).'], "", "return", $_tpl)';
+                    $varreplacement = 'tpltools::getVar(@$_tpl->vars['.implode('][', $_r).'], "", "return")';
 
                     $replacement = substr_replace(
                         $replacement,

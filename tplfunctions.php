@@ -56,3 +56,31 @@ function tplfunction_htmlselect($params, $_tpl)
 
     echo '</select>' . PHP_EOL;
 }
+
+/**
+ * Generate random numbers
+ *
+ * Parameters
+ *   - [optional] min
+ *   - [optional] max
+ *   - [optional] float: 'true' to return a float value (between 0 and 1)
+ *   - [optional] decimals: number of decimals to use when float is set to 'true'
+ *
+ * @param array $params an array containing the parameters assigned in the template
+ * @param object $_tpl the current tpl object
+ * @return int|float
+ */
+function tplfunction_random($args, $_tpl)
+{
+    $nbr = isset($args['min']) && isset($args['max']) ? mt_rand($args['min'], $args['max']) : mt_rand();
+
+    if (isset($args['float']) && $args['float'] == 'true') {
+        $nbr /= mt_getrandmax();
+
+        if (isset($args['decimals'])) {
+            $nbr = number_format($nbr, $args['decimals']);
+        }
+    }
+
+    return $nbr;
+}

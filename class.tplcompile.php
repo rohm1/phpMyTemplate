@@ -69,28 +69,17 @@ class tplcompile
         }
 
         //write output
-        $deps = '<?php' . PHP_EOL;
-        $deps .= '$deps = array(' . PHP_EOL;
-        $mdCat = "";
-        foreach ($this->dep as $file => $md5) {
-            $deps .= '\''.$file.'\' => \'' . $md5 . '\',' . PHP_EOL;
-            $mdCat .= $md5;
-        }
-        $deps .= ');' . PHP_EOL;
-        $deps .= '?>' . PHP_EOL;
-
-        $fname = 'tpl' . md5($mdCat);
-        $function = '<?php' . PHP_EOL;
-        $function .= '$function = \'' . $fname . '\';' . PHP_EOL;
-        $function .= '?>' . PHP_EOL;
+        $output = '<?php' . PHP_EOL .
+            'return array(' . PHP_EOL .
+            '"deps" => ' . var_export($this->dep, true) . ',' . PHP_EOL .
+            '"tpl" => function($_tpl) { ?>' . PHP_EOL .
+                $this->tpl . PHP_EOL .
+            '<?php }' .
+            ');' .
+        '?>';
 
         $f = fopen($outputFile, 'w');
-        fwrite($f, $deps .
-            $function .
-            '<?php function ' . $fname . '($_tpl) { ?>' . PHP_EOL .
-                $this->tpl . PHP_EOL .
-            '<?php } ?>' . PHP_EOL
-            );
+        fwrite($f, $output);
         fclose($f);
     }
 

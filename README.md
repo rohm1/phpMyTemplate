@@ -86,7 +86,7 @@ With this example, your HTML will be cached one hour, and regenerated after that
 Note: the second cache level is built upon the first cache level, so if there is a change in your template, it will not be taken into account until a new HTML is generated.
 
 ##Licence##
-Copyright (c) 2011-2013, rohm1 <rp@rohm1.com>.
+Copyright (c) 2011-2014, rohm1 <rp@rohm1.com>.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
