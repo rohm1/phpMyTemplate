@@ -29,12 +29,6 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 
 /**
- * Retrieves some tools
- */
-require_once __DIR__ . '/class.tpltools.php';
-require_once __DIR__ . '/tplfunctions.php';
-
-/**
  * constant TPL_DEBUG
  * if defined, recompiles all templates
  */
@@ -90,7 +84,6 @@ class tpl
      * Constructor
      *
      * @param mixed $newDir a directory to add to self::$template_dir
-     * @return void
      */
     public function __construct($newDir = '')
     {
@@ -174,7 +167,6 @@ class tpl
      */
     protected function compile($tplFile, $outputFile)
     {
-        require_once __DIR__ . '/class.tplcompile.php';
         new tplcompile($tplFile, $outputFile, $this->template_dir);
     }
 

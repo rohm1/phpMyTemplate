@@ -1,0 +1,8 @@
+{
+  "name": "rohm1/phpMyTemplate",
+  "description": "a PHP template engine",
+  "autoload": {
+    "classmap": ["src/"],
+    "files": ["assets/tplfunctions.php"]
+  }
+}
