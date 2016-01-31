@@ -192,7 +192,7 @@ class tpltools
                 $r = '<?php' . PHP_EOL .
                     '$_tpl->assign("_loop_' . $for_id . '", ' . $args['from'] . '); ' . PHP_EOL .
                     'while ($_loop_' . $for_id . (isset($args['to']) ? ' <= '.$args['to'] : ' >= ' .$args['downto']) . '): ' . PHP_EOL .
-                    '$_tpl->assign("' . substr($args['var'], 1) . '", $_loop_' . $for_id .'); ' . PHP_EOL .
+                    '$_tpl->assign("' . $args['var'] . '", $_loop_' . $for_id .'); ' . PHP_EOL .
                     '$_tpl->assign("_loop_' . $for_id . '", $_loop_' . $for_id . ' + ' . $args['step'] . '); ' .
                     '?>';
             }
@@ -232,10 +232,7 @@ class tpltools
     {
         switch ($modifier) {
             case 'capitalize':
-                $str = explode(' ', $var);
-                foreach($str as $k => $v)
-                    $str[$k] = ucfirst($v);
-                return implode(' ', $str);
+                return ucwords($var);
             case 'lower':
                 return strtolower($var);
             case 'count':
